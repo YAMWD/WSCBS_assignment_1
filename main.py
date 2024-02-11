@@ -11,35 +11,35 @@ app = Flask(__name__)
 def get_url(identifier):
     url = urls.get(identifier)
     if url:
-        return 301, url
+        return url, 301
     else:
-        return 404, "Not Found"
+        return "Not Found", 404
     
 # add a new identifier for the url
 @app.route("/<url>/<identifier>", methods=["PUT"])
 def add_item(url, identifier):
     try:
         if urls.get(identifier):
-            return 400, "Identifier already exists"
+            return "Identifier already exists", 400
         else:
             urls[identifier] = url
-            return 200, "Created"
+            return "Created", 200
     except:
-        return 404, "Not Found"
+        return "Not Found", 404
     
 # delete the identifier
 @app.route("/<identifier>", methods=["DELETE"])
 def delete_identifier(identifier):
     if urls.get(identifier):
         del urls[identifier]
-        return 204, "Deleted"
+        return "Deleted", 204
     else:
-        return 404, "Not Found"
+        return "Not Found", 404
     
 # get all the identifiers
 @app.route("/", methods=["GET"])
 def get_identifiers():
-    return 200, urls
+    return urls, 200
 
 # create a new identifier for the url
 @app.route("/<url>", methods=["POST"])
@@ -54,15 +54,15 @@ def create_identifier(url):
         #     return 404, "Invalid URL"
         identifier = hashlib.sha256(url.encode()).hexdigest()
         urls[identifier] = url
-        return 201, identifier
+        return identifier, 201
     except:
-        return 404, "Create Failed"
+        return "Create Failed", 404
     
 # delete all the identifiers
 @app.route("/", methods=["DELETE"])
 def delete_identifiers():
     urls.clear()
-    return 404, "All Deleted"
+    return "All Deleted", 404
 
 def check_url_validity(url):
     # regex pattern for url validation
