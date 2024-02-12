@@ -1,10 +1,42 @@
 from flask import Flask
 import hashlib
 import re
+import string
 
 urls = {}
 
 app = Flask(__name__)
+
+def hash(url):
+
+    ans = 0
+
+    for letter in url:
+        ans += ord(letter)
+        # ans = ans % limit
+    
+    while ans in urls.keys():
+        ans += 1
+        # ans = ans % limit
+
+    return ans
+
+def int2base64(n):
+    table = list(string.ascii_uppercase + string.ascii_lowercase + string.digits + '+' + '/')
+    s = bin(n)[2:]
+    
+    if len(s) % 6 != 0:
+        s = '0' * (6 - len(s) % 6) + s
+            
+    ans = ''
+    iter = int(len(s) / 6)
+    for i in range(iter):
+        start = i * 6
+        end = (i + 1) * 6
+        s_par = int(s[start:end], base = 2)
+        ans += table[s_par]
+    
+    return ans
 
 # get the url of the identifier
 @app.route("/<identifier>", methods=["GET"])
@@ -53,15 +85,10 @@ def create_identifier(url):
         id = [k for k, v in urls.items() if v == url][0]
         return 'identifier of {} already exists'.format(url), 400
 
-    identifier = '-1'
-    for i in range(len(urls)):
-        if str(i) not in urls.keys():
-            identifier = str(i)
-            break
-    
-    if identifier == '-1':
-        identifier = str(len(urls))
-    # identifier = hashlib.sha256(url.encode()).hexdigest()
+    identifier = int2base64(hash(url))
+
+    # identifier = str(hash(url))
+
     urls[identifier] = url
     return identifier, 201
 
