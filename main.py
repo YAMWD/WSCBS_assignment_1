@@ -1,7 +1,8 @@
-from flask import Flask
+from flask import Flask, request, jsonify, make_response
 import hashlib
 import re
 import string
+import json
 
 urls = {}
 
@@ -42,8 +43,18 @@ def int2base64(n):
 @app.route("/<identifier>", methods=["GET"])
 def get_url(identifier):
     url = urls.get(identifier)
-    if url:
-        return url, 301
+    if url != None:
+        # desired HTTP status code
+        status_code = 301
+
+        msg = json.dumps({'value': url})
+        # Create a response with JSON and text data
+        response = make_response(msg, status_code)
+
+        # Set the Content-Type header to application/json
+        response.headers['Content-Type'] = 'application/json'
+
+        return response
     else:
         return "Not Found", 404
     
@@ -74,23 +85,35 @@ def get_identifiers():
     return urls, 200
 
 # create a new identifier for the url
-@app.route("/<url>", methods=["POST"])
-def create_identifier(url):
-
+@app.route("/", methods=["POST"])
+def create_identifier():
+    data = request.json
+    url = data.get('value')
     # Check URL validity with a regex expression before creating a mapping for it
     if check_url_validity(url) == False:
         return  "Invalid URL", 400
-
+    print("2")
     if url in urls.values():
         id = [k for k, v in urls.items() if v == url][0]
         return 'identifier of {} already exists'.format(url), 400
+    print("3")
 
     identifier = int2base64(hash(url))
-
-    # identifier = str(hash(url))
-
+    print("4")
     urls[identifier] = url
-    return identifier, 201
+    print("5")
+
+    # desired HTTP status code
+    status_code = 201
+
+    msg = json.dumps({'id': identifier})
+    # Create a response with JSON and text data
+    response = make_response(msg, status_code)
+
+    # Set the Content-Type header to application/json
+    response.headers['Content-Type'] = 'application/json'
+
+    return response
 
 # delete all the identifiers
 @app.route("/", methods=["DELETE"])
