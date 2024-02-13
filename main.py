@@ -115,7 +115,6 @@ def create_identifier():
 
     return response
 
-
 # delete all the identifiers
 @app.route("/", methods=["DELETE"])
 def delete_identifiers():
@@ -131,4 +130,3 @@ def check_url_validity(url):
     else:
         return False
     
-
