@@ -122,8 +122,8 @@ def delete_identifiers():
     return "All Deleted", 404
 
 def check_url_validity(url):
-    # regex pattern for url validation, source from https://uibakery.io/regex-library/url-regex-python
-    pattern_1 = re.compile("^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$")
+    # regex pattern for url validation, source from https://uibakery.io/regex-library/url-regex-python https://blog.csdn.net/qq_42019226/article/details/126395030
+    pattern_1 = re.compile("^((https|http|ftp|rtsp|mms)?:\/\/)(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.)+([A-Za-z]{2,6})(:\d+)?(\/.*)?(\?.*)?(#.*)?$")
     pattern_2 = re.compile("^[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$")
     if pattern_1.match(url) or pattern_2.match(url):
         return True
