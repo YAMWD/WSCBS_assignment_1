@@ -100,7 +100,7 @@ def create_identifier():
         return  "Invalid URL", 400
     # Check whether the url already exists or not
     if url in urls.values():
-        id = [k for k, v in urls.items() if v == url][0] 
+        #id = [k for k, v in urls.items() if v == url][0] 
         return 'identifier of {} already exists'.format(url), 400
 
     identifier = int2base64(hash(url))
