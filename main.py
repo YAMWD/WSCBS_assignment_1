@@ -46,15 +46,15 @@ def get_identifiers():
 def create_identifier(url):
     try:
         # Check URL validity with a regex expression before creating a mapping for it
-        # if check_url_validity(url):
-        #     identifier = hashlib.sha256(url.encode()).hexdigest()
-        #     urls[identifier] = url
-        #     return 201, identifier
-        # else:
-        #     return 404, "Invalid URL"
-        identifier = hashlib.sha256(url.encode()).hexdigest()
-        urls[identifier] = url
-        return identifier, 201
+        if check_url_validity(url):
+            identifier = hashlib.sha256(url.encode()).hexdigest()
+            urls[identifier] = url
+            return identifier, 201
+        else:
+            return "Invalid URL", 205
+        # identifier = hashlib.sha256(url.encode()).hexdigest()
+        # urls[identifier] = url
+        # return identifier, 201
     except:
         return "Create Failed", 404
     
@@ -66,9 +66,10 @@ def delete_identifiers():
 
 def check_url_validity(url):
     # regex pattern for url validation
-    pattern = re.compile(r"(http|https)://[a-zA-Z0-9\-.]+\.[a-zA-Z]{2,3}(/\S*)?")
+    pattern = re.compile(r"^(http://|https://|www|http://www|https://\.)[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.com|\.cn|\.edu)$") 
     if pattern.match(url):
         return True
     else:
         return False
     
+
