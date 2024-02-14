@@ -1,13 +1,13 @@
 # WSCBS_assignment_1
 This Flask project implements a URL manager with six main functions:
 
-## 1.Get URL by Identifier: GET /&lt;identifier&rt
+## 1.Get URL by Identifier: GET /&lt;identifier&gt;
 Retrieves the URL associated with the given identifier.
 
-## 2.Update URL by Identifier: PUT /&lt;identifier&rt
+## 2.Update URL by Identifier: PUT /&lt;identifier&gt;
 Updates the URL associated with the given identifier with the new one provided in JSON format.
 
-## 3.Delete URL by Identifier: DELETE /&lt;identifier&gt
+## 3.Delete URL by Identifier: DELETE /&lt;identifier&gt;
 Deletes the identifier and its associated URL.
 
 ## 4.Get All URLs: GET /
@@ -26,7 +26,7 @@ You can install Flask simply using pip, run the following command in your termin
 
 Or, you can find more information on the website of Flask.
 
-"https://flask.palletsprojects.com/en/3.0.x/installation/"
+https://flask.palletsprojects.com/en/3.0.x/installation/
 
 # How to Run the Server
 Clone this repository to your local machine.
@@ -46,10 +46,10 @@ You can call the services using curl, a command-line tool for transferring data 
 curl -X GET http://localhost:5000/&lt;identifier&gt
 
 ## 2. Update URL by Identifier
-curl -X PUT -H "Content-Type: application/json" -d '{'url': "https://example.com/new"}' http://localhost:5000/&lt;identifier&gt
+curl -X PUT -H "Content-Type: application/json" -d '{'url': "https://example.com/new"}' http://localhost:5000/&lt;identifier&gt;
 
 ## 3. Delete URL by Identifier
-curl -X DELETE http://localhost:5000/&lt;identifier&gt
+curl -X DELETE http://localhost:5000/&lt;identifier&gt;
 
 ## 4. Get All URLs
 curl -X GET http://localhost:5000/
