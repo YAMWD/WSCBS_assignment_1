@@ -43,13 +43,13 @@ The server will start running locally on http://localhost:5000/.
 You can call the services using curl, a command-line tool for transferring data with URLs. Here are examples of how to call each service:
 
 ## 1. Get URL by Identifier
-curl -X GET http://localhost:5000/%3Cidentifier&gt;
+curl -X GET http://localhost:5000/<identifier&gt;
 
 ## 2. Update URL by Identifier
-curl -X PUT -H "Content-Type: application/json" -d '{'url': "https://example.com/new"}' http://localhost:5000/%3Cidentifier&gt;
+curl -X PUT -H "Content-Type: application/json" -d '{'url': "https://example.com/new"}' http://localhost:5000/<identifier&gt;
 
 ## 3. Delete URL by Identifier
-curl -X DELETE http://localhost:5000/%3Cidentifier&gt;
+curl -X DELETE http://localhost:5000/<identifier&gt;
 
 ## 4. Get All URLs
 curl -X GET http://localhost:5000/
