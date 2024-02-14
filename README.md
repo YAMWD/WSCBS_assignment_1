@@ -1,10 +1,10 @@
 # WSCBS_assignment_1
 This Flask project implements a URL manager with six main functions:
 
-## 1.Get URL by Identifier: GET /&lt;identifier&gt
+## 1.Get URL by Identifier: GET /&lt;identifier&rt
 Retrieves the URL associated with the given identifier.
 
-## 2.Update URL by Identifier: PUT /&lt;identifier&gt
+## 2.Update URL by Identifier: PUT /&lt;identifier&rt
 Updates the URL associated with the given identifier with the new one provided in JSON format.
 
 ## 3.Delete URL by Identifier: DELETE /&lt;identifier&gt
