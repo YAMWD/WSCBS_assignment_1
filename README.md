@@ -1,4 +1,4 @@
-# WSCBS_assignment_1
+# WSCS_assignment_1
 This Flask project implements a URL manager with six main functions:
 
 ## 1.Get URL by Identifier: GET /&lt;identifier&gt;
