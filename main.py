@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS users (
 ''')
 
 
-# Function to add a new user
+# Create a new user with username and password and store it in a table
 def add_user(username, password):
     try:
         cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
@@ -31,7 +31,7 @@ def add_user(username, password):
         return False
 #add_user("sd",122) #test add user
 
-# Function to verify user login
+# Check if username and password exist in the table
 def verify_user(username, password):
     cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
     user = cursor.fetchone()
@@ -41,7 +41,7 @@ def verify_user(username, password):
         return False
 #verify_user("sd",23423) #verify user test.
 
-# Function to update a user's password
+# Update the user’s password if the user presents the correct old password
 def update_password(username, old_password, new_password):
     # Check if the old password is correct
     cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
@@ -52,7 +52,7 @@ def update_password(username, old_password, new_password):
         conn.commit()
         return True
     else:
-        # Incorrect old password
+        # Iput incorrect old password
         return False
 #update_password("as",23423,111) #test
 
