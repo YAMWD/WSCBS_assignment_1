@@ -158,7 +158,7 @@ def delete_identifiers():
     return "All Deleted", 404
 
 # Create a new user with username and password and store it in a table
-@app.route("/user", methods=["POST"])
+@app.route("/users", methods=["POST"])
 def create_user():
     data = request.json
     username = data.get('username')
@@ -174,12 +174,13 @@ def create_user():
         return "Created", 201
     
 # Update the user’s password if the user presents the correct old password, or else return 403.
-@app.route("/user", methods=["PUT"])
+@app.route("/users", methods=["PUT"])
 def update_user():
     data = request.json
     username = data.get('username')
     old_password = data.get('old_password')
     new_password = data.get('new_password')
+    print(users, users.get(username))
     if users.get(username) == old_password:
         users[username] = new_password
         status_code = 200
@@ -195,7 +196,7 @@ def update_user():
         return response
     
 # Check if username and password exist in the table and generate a JWT or else return 403
-@app.route("/user/login", methods=["POST"])
+@app.route("/users/login", methods=["POST"])
 def get_user():
     data = request.json
     username = data.get('username')
@@ -209,7 +210,7 @@ def get_user():
         return response
     else:
         status_code = 403
-        msg = json.dumps({'detail': 'Forbidden'})
+        msg = json.dumps({'detail': 'forbidden'})
         response = make_response(msg, status_code)
         response.headers['Content-Type'] = 'application/json'
         return response
