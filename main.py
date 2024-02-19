@@ -7,6 +7,7 @@ import base64
 import datetime
 
 urls = {}
+users = {}
 
 app = Flask(__name__)
 
@@ -155,6 +156,63 @@ def create_identifier():
 def delete_identifiers():
     urls.clear()
     return "All Deleted", 404
+
+# Create a new user with username and password and store it in a table
+@app.route("/user", methods=["POST"])
+def create_user():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+    if username in users.keys():
+        status_code = 409
+        msg = json.dumps({'detail': 'duplicate'})
+        response = make_response(msg, status_code)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        users[username] = password
+        return "Created", 201
+    
+# Update the user’s password if the user presents the correct old password, or else return 403.
+@app.route("/user", methods=["PUT"])
+def update_user():
+    data = request.json
+    username = data.get('username')
+    old_password = data.get('old_password')
+    new_password = data.get('new_password')
+    if users.get(username) == old_password:
+        users[username] = new_password
+        status_code = 200
+        msg = json.dumps({'detail': 'Updated'})
+        response = make_response(msg, status_code)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        status_code = 403
+        msg = json.dumps({'detail': 'Forbidden'})
+        response = make_response(msg, status_code)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    
+# Check if username and password exist in the table and generate a JWT or else return 403
+@app.route("/user/login", methods=["POST"])
+def get_user():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+    if users.get(username) == password:
+        status_code = 200
+        JWT = generate_JWT(username)
+        msg = json.dumps({'detail': JWT})
+        response = make_response(msg, status_code)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        status_code = 403
+        msg = json.dumps({'detail': 'Forbidden'})
+        response = make_response(msg, status_code)
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 def check_url_validity(url):
     # regex pattern for url validation, source from https://uibakery.io/regex-library/url-regex-python https://blog.csdn.net/qq_42019226/article/details/126395030
