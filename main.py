@@ -1,12 +1,43 @@
 from flask import Flask, request, jsonify, make_response
-import hashlib
+import hmac, hashlib
 import re
 import string
 import json
+import base64
+import datetime
 
 urls = {}
 
 app = Flask(__name__)
+
+def generate_JWT(user_name):
+    date_time = datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S")
+
+    header = {
+    "alg": "HS256",
+    "typ": "JWT"
+    }
+
+    payload = {
+    "sub": "1234567890",
+    "name": user_name,
+    "iat": date_time
+    }
+
+    secret = b'student138, 145.100.135.138, JahL7laipah1voob'
+
+    header_bytes = json.dumps(header).encode('utf-8')
+
+    payload_bytes = json.dumps(payload).encode('utf-8')
+
+    base_string = base64.urlsafe_b64encode(header_bytes) + b'.' + base64.urlsafe_b64encode(payload_bytes)
+
+    signature = hmac.new(secret, base_string, digestmod=hashlib.sha256).hexdigest()
+
+    print(signature)
+
+    return signature
+
 #Generate hash value of url
 def hash(url):
 
@@ -21,6 +52,7 @@ def hash(url):
         # ans = ans % limit
 
     return ans
+
 #shorten the hash. The hash(url) returns an integer, this funtion turn 10 base into 64base
 def int2base64(n):
     #make a base64 table, list by index-character 
