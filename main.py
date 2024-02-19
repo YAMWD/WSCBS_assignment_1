@@ -3,6 +3,42 @@ import hashlib
 import re
 import string
 import json
+import sqlite3
+
+# Connect to SQLite database (or create it if it doesn't exist)
+conn = sqlite3.connect('login.db')
+
+# Create a cursor object
+cursor = conn.cursor()
+
+# Create a table for storing user login information
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL
+)
+''')
+
+
+# Function to add a new user
+def add_user(username, password):
+    try:
+        cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+add_user("sd",122)
+# Function to verify user login
+def verify_user(username, password):
+    cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
+    user = cursor.fetchone()
+    if user and user[0] == password:
+        return True
+    else:
+        return False
+verify_user("ad",23423)
 
 urls = {}
 
