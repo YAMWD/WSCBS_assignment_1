@@ -29,7 +29,7 @@ def add_user(username, password):
         return True
     except sqlite3.IntegrityError:
         return False
-add_user("sd",122) #test add user
+#add_user("sd",122) #test add user
 
 # Function to verify user login
 def verify_user(username, password):
@@ -39,7 +39,7 @@ def verify_user(username, password):
         return True
     else:
         return False
-verify_user("sd",23423) #verify user test.
+#verify_user("sd",23423) #verify user test.
 
 # Function to update a user's password
 def update_password(username, old_password, new_password):
