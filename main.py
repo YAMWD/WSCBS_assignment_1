@@ -29,7 +29,8 @@ def add_user(username, password):
         return True
     except sqlite3.IntegrityError:
         return False
-add_user("sd",122)
+add_user("sd",122) #test add user
+
 # Function to verify user login
 def verify_user(username, password):
     cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
@@ -38,7 +39,24 @@ def verify_user(username, password):
         return True
     else:
         return False
-verify_user("ad",23423)
+verify_user("sd",23423) #verify user test.
+
+# Function to update a user's password
+def update_password(username, old_password, new_password):
+    # Check if the old password is correct
+    cursor.execute("SELECT password FROM users WHERE username = ?", (username,))
+    user = cursor.fetchone()
+    if user and user[0] == old_password:
+        # Update to the new password
+        cursor.execute("UPDATE users SET password = ? WHERE username = ?", (new_password, username))
+        conn.commit()
+        return True
+    else:
+        # Incorrect old password
+        return False
+#update_password("as",23423,111) #test
+
+
 
 urls = {}
 
