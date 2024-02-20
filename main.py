@@ -178,7 +178,7 @@ def create_user():
 def update_user():
     data = request.json
     username = data.get('username')
-    old_password = data.get('old_password')
+    old_password = data.get('password')
     new_password = data.get('new_password')
     print(users, users.get(username))
     if users.get(username) == old_password:
@@ -190,7 +190,7 @@ def update_user():
         return response
     else:
         status_code = 403
-        msg = json.dumps({'detail': 'Forbidden'})
+        msg = json.dumps({'detail': 'forbidden'})
         response = make_response(msg, status_code)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -218,40 +218,7 @@ def get_user():
 def check_url_validity(url):
     # regex pattern for url validation, source from https://uibakery.io/regex-library/url-regex-python https://blog.csdn.net/qq_42019226/article/details/126395030
     pattern_1 = re.compile("^((https|http|ftp|rtsp|mms)?:\/\/)(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.)+([A-Za-z]{2,6})(:\d+)?(\/.*)?(\?.*)?(#.*)?$")
-    #((https|http|ftp|rtsp|mms)?:\/\/) matches the protocol of the URL, ---------------
-    #which must be one of the specified (https, http, ftp, rtsp, mms), followed by ://.
-    #s in https is optional, making it match both http and https.
-
-    #(([A-Za-z0-9]+-[A-Za-z0-9]+|[A-Za-z0-9]+)\.)+ matches the domain name ---------------which can include 
-    #hyphenated labels (like example-site) or non-hyphenated labels (like example), followed by a period. 
-    #This part ensures that at least one domain label is present 
-    #and can match multiple subdomain levels (like sub.example.com).
-
-    #([A-Za-z]{2,6}) matches the top-level domain (TLD), assuming it is between 2 to 6 letters long. ---------------
-    #This range might not cover all modern TLDs, which can be longer than 6 characters.
-
-    #(:\d+)? optionally matches a colon followed by a port number
-
-    #(\/.*)optionally matches a forward slash followed by any character (.*), 
-    #representing the path of the URL.
-
-    #(\?.*)?  optionally matches a question mark followed by any character, 
-    #representing the query string parameters of the URL.
-
-    #(#.*)? optionally matches a hash symbol followed by any character, 
-    #representing the fragment identifier of the URL.
     pattern_2 = re.compile("^[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$")
-    #[-a-zA-Z0-9@:%._\\+~#=]{1,256} matches the beginning part of a URL or domain name, ------------------
-    #allowing for a variety of characters (including alphanumeric characters, hyphens, @, percent signs, colons, periods, underscores, backslashes, plus signs, tildes, and equal signs) 
-    #up to 256 characters. This could include subdomains or the initial part of a domain.
-
-    #\\.[a-zA-Z0-9()]{1,6}\\b matches the top-level domain (TLD) of the URL, starting with a dot .  ------------
-    #followed by alphanumeric characters or parentheses, limited to 1 to 6 characters in length. 
-    #The word boundary \\b ensures that the TLD is a discrete segment.
-
-    #(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$ is a non-capturing group (indicated by (?:...))  ------------
-    #that matches the rest of the URL, which can include a variety of characters similar to 
-    #those allowed in the first part. This part of the regex can match paths, query parameters, and fragments.
     if pattern_1.match(url) or pattern_2.match(url):
         return True
     else:
