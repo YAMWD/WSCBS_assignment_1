@@ -8,6 +8,7 @@ import datetime
 
 urls = {}
 users = {}
+JWT_info = {}
 
 app = Flask(__name__)
 
@@ -20,9 +21,10 @@ def generate_JWT(user_name):
     }
 
     payload = {
-    "sub": "1234567890",
+    "sub": "JWT",
     "name": user_name,
-    "iat": date_time
+    "iat": date_time,
+    "exp": 600
     }
 
     secret = b'student138, 145.100.135.138, JahL7laipah1voob'
@@ -35,7 +37,7 @@ def generate_JWT(user_name):
 
     signature = hmac.new(secret, base_string, digestmod=hashlib.sha256).hexdigest()
 
-    print(signature)
+    JWT_info[user_name] = {'token': signature, 'issue_date': date_time}
 
     return signature
 
@@ -74,11 +76,42 @@ def int2base64(n):
     
     return ans
 
+def get_user_by_JWT(JWT):
+    for user, entry in JWT_info.items():
+        if entry['token'] == JWT:
+            return (user, entry['issue_date'])
+    return None
+
+def check_jwt_vadility(start_time, end_time):
+    duration = end_time - start_time
+
+    seconds = duration.total_seconds()
+
+    if seconds > 600:
+        return False
+    else:
+        return True
+
 # get the url of the identifier
 @app.route("/<identifier>", methods=["GET"])
 def get_url(identifier):
+    data = request.json
+    JWT = data.get('JWT')
+
+    info = get_user_by_JWT(JWT)
+    if info == None:
+        return "forbidden", 403
+
+    user = info[0]
+    prev_date_time = datetime.datetime.strptime(info[1], "%m/%d/%Y, %H:%M:%S")
+    if check_jwt_vadility(prev_date_time, datetime.datetime.now()) == False:
+        return "forbidden", 403
+    
+    if user not in urls.keys():
+        urls[user] = {}
+
     #if id is found in urls, return its url, else return 404 not found
-    url = urls.get(identifier)
+    url = urls[user].get(identifier)
     if url != None:
         # desired HTTP status code
         status_code = 301
@@ -98,13 +131,25 @@ def get_url(identifier):
 @app.route("/<identifier>", methods=["PUT"])
 def update_item(identifier):
     data = request.data
-    url = json.loads(data.decode())['url']
-    if urls.get(identifier):
+    data = json.loads(data.decode())
+    url = data['url']
+    JWT = data['JWT']
+
+    info = get_user_by_JWT(JWT)
+    if info == None:
+        return "forbidden", 403
+
+    user = info[0]
+    prev_date_time = datetime.datetime.strptime(info[1], "%m/%d/%Y, %H:%M:%S")
+    if check_jwt_vadility(prev_date_time, datetime.datetime.now()) == False:
+        return "forbidden", 403
+
+    print(urls)
+    if user in urls.keys() and urls[user].get(identifier) != None:
         if check_url_validity(url) == False:
             return "Invalid URL", 400 #400 with an error if the update failed (e.g., the URL was invalid)
         else:
-            urls[identifier] = url
-            print("1")
+            urls[user][identifier] = url
             return "Updated", 200 #Updates the URL behind the given ID.
     else:   
         return "Not Found", 404 #404 if the ID does not exist
@@ -112,8 +157,20 @@ def update_item(identifier):
 # delete the identifier
 @app.route("/<identifier>", methods=["DELETE"])
 def delete_identifier(identifier):
-    if urls.get(identifier):
-        del urls[identifier]
+    data = request.json
+    JWT = data['JWT']
+
+    info = get_user_by_JWT(JWT)
+    if info == None:
+        return "forbidden", 403
+
+    user = info[0]
+    prev_date_time = datetime.datetime.strptime(info[1], "%m/%d/%Y, %H:%M:%S")
+    if check_jwt_vadility(prev_date_time, datetime.datetime.now()) == False:
+        return "forbidden", 403
+
+    if user in urls.keys() and urls[user].get(identifier) != None:
+        del urls[user][identifier]
         return "Deleted", 204 #find the identifier and delete it 
     else:
         return "Not Found", 404 #identifier not found
@@ -121,23 +178,53 @@ def delete_identifier(identifier):
 # get all the identifiers
 @app.route("/", methods=["GET"])
 def get_identifiers():
-    return urls, 200
+    data = request.json
+    JWT = data.get('JWT')
+
+    info = get_user_by_JWT(JWT)
+    if info == None:
+        return "forbidden", 403
+
+    user = info[0]
+    prev_date_time = datetime.datetime.strptime(info[1], "%m/%d/%Y, %H:%M:%S")
+    if check_jwt_vadility(prev_date_time, datetime.datetime.now()) == False:
+        return "forbidden", 403
+    
+    if user not in urls.keys():
+        urls[user] = {}
+
+    return urls[user], 200
 
 # create a new identifier for the url
 @app.route("/", methods=["POST"])
 def create_identifier():
     data = request.json
     url = data.get('value')
+    JWT = data.get('JWT')
+
+    info = get_user_by_JWT(JWT)
+    if info == None:
+        return "forbidden", 403
+
+    user = info[0]
+    prev_date_time = datetime.datetime.strptime(info[1], "%m/%d/%Y, %H:%M:%S")
+    if check_jwt_vadility(prev_date_time, datetime.datetime.now()) == False:
+        return "forbidden", 403
+
     # Check URL validity with a regex expression before creating a mapping for it
     if check_url_validity(url) == False:
         return  "Invalid URL", 400
     # Check whether the url already exists or not
-    if url in urls.values():
+    if user in urls.keys() and url in urls[user].values():
         #id = [k for k, v in urls.items() if v == url][0] 
         return 'identifier of {} already exists'.format(url), 400
 
     identifier = int2base64(hash(url))
-    urls[identifier] = url
+    if user in urls.keys():
+        urls[user][identifier] = url
+    else:
+        urls[user] = {}
+        urls[user][identifier] = url
 
     # desired HTTP status code
     status_code = 201
@@ -154,7 +241,20 @@ def create_identifier():
 # delete all the identifiers
 @app.route("/", methods=["DELETE"])
 def delete_identifiers():
-    urls.clear()
+    data = request.json
+    JWT = data.get('JWT')
+
+    info = get_user_by_JWT(JWT)
+    if info == None:
+        return "forbidden", 403
+
+    user = info[0]
+    prev_date_time = datetime.datetime.strptime(info[1], "%m/%d/%Y, %H:%M:%S")
+    if check_jwt_vadility(prev_date_time, datetime.datetime.now()) == False:
+        return "forbidden", 403
+    
+    if user in urls.keys():
+        urls[user].clear()
     return "All Deleted", 404
 
 # Create a new user with username and password and store it in a table
