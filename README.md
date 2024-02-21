@@ -19,6 +19,15 @@ Generates a new identifier for the URL provided in JSON format using a custom ha
 ## 6. Delete All URLs and Identifiers: DELETE /
 Deletes all stored URLs and identifiers.
 
+## 7. Create New User: POST /users
+Create a new user with username and password and store it in a table
+
+## 8. Change password: PUT /users
+Update the user’s password if the user presents the correct old password
+
+## 9. Login: POST /users/login
+Check if username and password exist in the table and generate a JWT
+
 # How to Install Flask
 You can install Flask simply using pip, run the following command in your terminal:
 ```
@@ -43,21 +52,31 @@ The server will start running locally on http://127.0.0.1:5000/.
 You can call the services using curl, a command-line tool for transferring data with URLs. Here are examples of how to call each service:
 
 ## 1. Get URL by Identifier
-curl -X GET http://127.0.0.1:5000/<identifier&gt;
+curl -X GET -H "Content-Type: application/json" -d '{"JWT": "JWT"}' http://127.0.0.1:5000/<identifier&gt;
 
 ## 2. Update URL by Identifier
-curl -X PUT -H "Content-Type: application/json" -d '{'url': "https://example.com/new"}' http://127.0.0.1:5000/<identifier&gt;
+curl -X PUT -H "Content-Type: application/json" -d '{"url": "https://example.com/new", "JWT": "JWT"}' http://127.0.0.1:5000/<identifier&gt;
 
 ## 3. Delete URL by Identifier
-curl -X DELETE http://127.0.0.1:5000/<identifier&gt;
+curl -X DELETE -H "Content-Type: application/json" -d '{"JWT": "JWT"}' http://127.0.0.1:5000/<identifier&gt;
 
 ## 4. Get All URLs
-curl -X GET http://127.0.0.1:5000/
+curl -X GET -H "Content-Type: application/json" -d '{"JWT": "JWT"}' http://127.0.0.1:5000/
 
 ## 5. Generate Identifier for URL
-curl -X POST -H "Content-Type: application/json" -d '{'value': "https://example.com"}' http://127.0.0.1:5000/
+curl -X POST -H "Content-Type: application/json" -d '{"value": "https://example.com", "JWT": "JWT"}' http://127.0.0.1:5000/
 
 ## 6. Delete All URLs and Identifiers
-curl -X DELETE http://127.0.0.1:5000/
+curl -X DELETE -H "Content-Type: application/json" -d '{"JWT": "JWT"}' http://127.0.0.1:5000/
+
+## 7. Create New User
+curl -X POST -H "Content-Type: application/json" -d '{"username": "username", "password": "password"}' http://127.0.0.1:5000/users
+
+## 8. Update Password
+curl -X PUT -H "Content-Type: application/json" -d '{"username": "username", "password": "old_password", "new_password":"new_password"}' http://127.0.0.1:5000/users
+
+## 9. Login
+curl -X POST -H "Content-Type: application/json" -d '{"username": "username", "password": "password"}' http://127.0.0.1:5000/users/login
+
 
 
