@@ -95,8 +95,10 @@ def check_jwt_vadility(start_time, end_time):
 # get the url of the identifier
 @app.route("/<identifier>", methods=["GET"])
 def get_url(identifier):
-    data = request.json
-    JWT = data.get('JWT')
+    # data = request.json
+
+    header = request.headers
+    JWT = header.get('Authorization')
 
     info = get_user_by_JWT(JWT)
     if info == None:
@@ -133,7 +135,9 @@ def update_item(identifier):
     data = request.data
     data = json.loads(data.decode())
     url = data['url']
-    JWT = data['JWT']
+
+    header = request.headers
+    JWT = header.get('Authorization')
 
     info = get_user_by_JWT(JWT)
     if info == None:
@@ -157,8 +161,9 @@ def update_item(identifier):
 # delete the identifier
 @app.route("/<identifier>", methods=["DELETE"])
 def delete_identifier(identifier):
-    data = request.json
-    JWT = data['JWT']
+    # data = request.json
+    header = request.headers
+    JWT = header.get('Authorization')
 
     info = get_user_by_JWT(JWT)
     if info == None:
@@ -178,8 +183,9 @@ def delete_identifier(identifier):
 # get all the identifiers
 @app.route("/", methods=["GET"])
 def get_identifiers():
-    data = request.json
-    JWT = data.get('JWT')
+    # data = request.json
+    header = request.headers
+    JWT = header.get('Authorization')
 
     info = get_user_by_JWT(JWT)
     if info == None:
@@ -199,8 +205,9 @@ def get_identifiers():
 @app.route("/", methods=["POST"])
 def create_identifier():
     data = request.json
+    header = request.headers
     url = data.get('value')
-    JWT = data.get('JWT')
+    JWT = header.get('Authorization')
 
     info = get_user_by_JWT(JWT)
     if info == None:
@@ -210,7 +217,6 @@ def create_identifier():
     prev_date_time = datetime.datetime.strptime(info[1], "%m/%d/%Y, %H:%M:%S")
     if check_jwt_vadility(prev_date_time, datetime.datetime.now()) == False:
         return "forbidden", 403
-
     # Check URL validity with a regex expression before creating a mapping for it
     if check_url_validity(url) == False:
         return  "Invalid URL", 400
@@ -241,8 +247,9 @@ def create_identifier():
 # delete all the identifiers
 @app.route("/", methods=["DELETE"])
 def delete_identifiers():
-    data = request.json
-    JWT = data.get('JWT')
+    # data = request.json
+    header = request.headers
+    JWT = header.get('Authorization')
 
     info = get_user_by_JWT(JWT)
     if info == None:
@@ -304,7 +311,7 @@ def get_user():
     if users.get(username) == password:
         status_code = 200
         JWT = generate_JWT(username)
-        msg = json.dumps({'detail': JWT})
+        msg = json.dumps({'token': JWT})
         response = make_response(msg, status_code)
         response.headers['Content-Type'] = 'application/json'
         return response
