@@ -52,22 +52,22 @@ The server will start running locally on http://127.0.0.1:5000/.
 You can call the services using curl, a command-line tool for transferring data with URLs. Here are examples of how to call each service:
 
 ## 1. Get URL by Identifier
-curl -X GET -H "Content-Type: application/json" -d '{"JWT": "JWT"}' http://127.0.0.1:5000/<identifier&gt;
+curl -X GET -H "Content-Type: application/json" -H "Authorization: JWT" http://127.0.0.1:5000/<identifier&gt;
 
 ## 2. Update URL by Identifier
-curl -X PUT -H "Content-Type: application/json" -d '{"url": "https://example.com/new", "JWT": "JWT"}' http://127.0.0.1:5000/<identifier&gt;
+curl -X PUT -H "Content-Type: application/json" -H "Authorization: JWT" -d '{"url": "https://example.com/new"}' http://127.0.0.1:5000/<identifier&gt;
 
-## 3. Delete URL by Identifier
-curl -X DELETE -H "Content-Type: application/json" -d '{"JWT": "JWT"}' http://127.0.0.1:5000/<identifier&gt;
+## 3. Delete URL by Identifier 
+curl -X DELETE -H "Content-Type: application/json" -H "Authorization: JWT" http://127.0.0.1:5000/<identifier&gt;
 
 ## 4. Get All URLs
-curl -X GET -H "Content-Type: application/json" -d '{"JWT": "JWT"}' http://127.0.0.1:5000/
+curl -X GET -H "Content-Type: application/json" -H "Authorization: JWT"  http://127.0.0.1:5000/
 
 ## 5. Generate Identifier for URL
-curl -X POST -H "Content-Type: application/json" -d '{"value": "https://example.com", "JWT": "JWT"}' http://127.0.0.1:5000/
+curl -X POST -H "Content-Type: application/json" -H "Authorization: JWT" -d '{"value": "https://example.com"}' http://127.0.0.1:5000/
 
 ## 6. Delete All URLs and Identifiers
-curl -X DELETE -H "Content-Type: application/json" -d '{"JWT": "JWT"}' http://127.0.0.1:5000/
+curl -X DELETE -H "Content-Type: application/json" -H "Authorization: JWT" http://127.0.0.1:5000/
 
 ## 7. Create New User
 curl -X POST -H "Content-Type: application/json" -d '{"username": "username", "password": "password"}' http://127.0.0.1:5000/users

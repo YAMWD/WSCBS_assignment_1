@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, make_response
+import atexit
 import hmac, hashlib
 import re
 import string
@@ -6,9 +7,33 @@ import json
 import base64
 import datetime
 
-urls = {}
-users = {}
-JWT_info = {}
+def save_data(urls, users, JWT_info):
+    with open('urls.json', 'w') as f:
+        json.dump(urls, f)
+    with open('users.json', 'w') as f:
+        json.dump(users, f)
+    with open('JWT_info.json', 'w') as f:
+        json.dump(JWT_info, f)
+
+def load_data():
+    urls = {}
+    users = {}
+    JWT_info = {}
+    try:
+        with open('urls.json', 'r') as f:
+            urls = json.load(f)
+        with open('users.json', 'r') as f:
+            users = json.load(f)
+        with open('JWT_info.json', 'r') as f:
+            JWT_info = json.load(f)
+    except:
+        urls = {}
+        users = {}
+        JWT_info = {}
+    return urls, users, JWT_info
+
+urls, users, JWT_info = load_data()
+atexit.register(save_data, urls, users, JWT_info)
 
 app = Flask(__name__)
 
@@ -330,4 +355,5 @@ def check_url_validity(url):
         return True
     else:
         return False
+    
     
