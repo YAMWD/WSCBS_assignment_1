@@ -1,0 +1,10 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - /home/student138/WSCS_assignment_1/app_data/:/app/app_data/
+    image: wscs_assignment_1-web:latest  
+    stdin_open: true
+    tty: true
