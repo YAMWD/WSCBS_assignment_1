@@ -6,13 +6,18 @@ import string
 import json
 import base64
 import datetime
+import os
 
+home_dir = os.getcwd()
+
+data_path = home_dir + '/app_data/'
+    
 def save_data(urls, users, JWT_info):
-    with open('urls.json', 'w') as f:
+    with open(data_path + 'urls.json', 'w') as f:
         json.dump(urls, f)
-    with open('users.json', 'w') as f:
+    with open(data_path + 'users.json', 'w') as f:
         json.dump(users, f)
-    with open('JWT_info.json', 'w') as f:
+    with open(data_path + 'JWT_info.json', 'w') as f:
         json.dump(JWT_info, f)
 
 def load_data():
@@ -20,11 +25,11 @@ def load_data():
     users = {}
     JWT_info = {}
     try:
-        with open('urls.json', 'r') as f:
+        with open(data_path + 'urls.json', 'r') as f:
             urls = json.load(f)
-        with open('users.json', 'r') as f:
+        with open(data_path + 'users.json', 'r') as f:
             users = json.load(f)
-        with open('JWT_info.json', 'r') as f:
+        with open(data_path + 'JWT_info.json', 'r') as f:
             JWT_info = json.load(f)
     except:
         urls = {}
