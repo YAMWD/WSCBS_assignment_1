@@ -9,9 +9,9 @@ import datetime
 import os
 
 home_dir = os.getcwd()
-
 data_path = home_dir + '/app_data/'
-    
+print(data_path)
+
 def save_data(urls, users, JWT_info):
     with open(data_path + 'urls.json', 'w') as f:
         json.dump(urls, f)
@@ -27,18 +27,24 @@ def load_data():
     try:
         with open(data_path + 'urls.json', 'r') as f:
             urls = json.load(f)
+    except:
+        urls = {}
+    
+    try:
         with open(data_path + 'users.json', 'r') as f:
             users = json.load(f)
+    except:
+        users = {}
+    
+    try:
         with open(data_path + 'JWT_info.json', 'r') as f:
             JWT_info = json.load(f)
     except:
-        urls = {}
-        users = {}
         JWT_info = {}
+    
     return urls, users, JWT_info
 
 urls, users, JWT_info = load_data()
-atexit.register(save_data, urls, users, JWT_info)
 
 app = Flask(__name__)
 
@@ -68,6 +74,8 @@ def generate_JWT(user_name):
     signature = hmac.new(secret, base_string, digestmod=hashlib.sha256).hexdigest()
 
     JWT_info[user_name] = {'token': signature, 'issue_date': date_time}
+
+    save_data(urls, users, JWT_info)
 
     return signature
 
@@ -184,6 +192,7 @@ def update_item(identifier):
             return "Invalid URL", 400 #400 with an error if the update failed (e.g., the URL was invalid)
         else:
             urls[user][identifier] = url
+            save_data(urls, users, JWT_info)
             return "Updated", 200 #Updates the URL behind the given ID.
     else:   
         return "Not Found", 404 #404 if the ID does not exist
@@ -206,6 +215,7 @@ def delete_identifier(identifier):
 
     if user in urls.keys() and urls[user].get(identifier) != None:
         del urls[user][identifier]
+        save_data(urls, users, JWT_info)        
         return "Deleted", 204 #find the identifier and delete it 
     else:
         return "Not Found", 404 #identifier not found
@@ -262,6 +272,8 @@ def create_identifier():
         urls[user] = {}
         urls[user][identifier] = url
 
+    save_data(urls, users, JWT_info)
+
     # desired HTTP status code
     status_code = 201
 
@@ -292,6 +304,9 @@ def delete_identifiers():
     
     if user in urls.keys():
         urls[user].clear()
+    
+    save_data(urls, users, JWT_info)
+    
     return "All Deleted", 404
 
 # Create a new user with username and password and store it in a table
@@ -308,6 +323,9 @@ def create_user():
         return response
     else:
         users[username] = password
+        
+        save_data(urls, users, JWT_info)
+
         return "Created", 201
     
 # Update the user’s password if the user presents the correct old password, or else return 403.
@@ -324,6 +342,9 @@ def update_user():
         msg = json.dumps({'detail': 'Updated'})
         response = make_response(msg, status_code)
         response.headers['Content-Type'] = 'application/json'
+        
+        save_data(urls, users, JWT_info)
+        
         return response
     else:
         status_code = 403
