@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wscs
+  labels:
+    app: wscs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: wscs
+  template:
+    metadata:
+      labels:
+        app: wscs
+    spec:
+      containers:
+      - name: wscs
+        image: mma737/wscs:v1  
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: wscs
+          mountPath: '/app/app_data'
+      volumes:
+      - name: wscs
+        persistentVolumeClaim:
+          claimName: nfs-pvc
