@@ -12,6 +12,10 @@ home_dir = os.getcwd()
 data_path = home_dir + '/app_data/'
 print(data_path)
 
+urls = {}
+user = {}
+JWT_info ={}
+
 def save_data(urls, users, JWT_info):
     with open(data_path + 'urls.json', 'w') as f:
         json.dump(urls, f)
@@ -21,9 +25,6 @@ def save_data(urls, users, JWT_info):
         json.dump(JWT_info, f)
 
 def load_data():
-    urls = {}
-    users = {}
-    JWT_info = {}
     try:
         with open(data_path + 'urls.json', 'r') as f:
             urls = json.load(f)
@@ -72,11 +73,7 @@ def generate_JWT(user_name):
 
     signature = hmac.new(secret, base_string, digestmod=hashlib.sha256).hexdigest()
 
-    JWT_info[user_name] = {'token': signature, 'issue_date': date_time}
-
-    save_data(urls, users, JWT_info)
-
-    return signature
+    return signature, date_time
 
 #Generate hash value of url
 def hash(url):
@@ -113,7 +110,7 @@ def int2base64(n):
     
     return ans
 
-def get_user_by_JWT(JWT):
+def get_user_by_JWT(JWT, JWT_info):
     for user, entry in JWT_info.items():
         if entry['token'] == JWT:
             return (user, entry['issue_date'])
@@ -138,7 +135,7 @@ def get_url(identifier):
     header = request.headers
     JWT = header.get('Authorization')
 
-    info = get_user_by_JWT(JWT)
+    info = get_user_by_JWT(JWT, JWT_info)
     if info == None:
         return "forbidden", 403
 
@@ -178,7 +175,7 @@ def update_item(identifier):
     header = request.headers
     JWT = header.get('Authorization')
 
-    info = get_user_by_JWT(JWT)
+    info = get_user_by_JWT(JWT, JWT_info)
     if info == None:
         return "forbidden", 403
 
@@ -206,7 +203,7 @@ def delete_identifier(identifier):
     header = request.headers
     JWT = header.get('Authorization')
 
-    info = get_user_by_JWT(JWT)
+    info = get_user_by_JWT(JWT, JWT_info)
     if info == None:
         return "forbidden", 403
 
@@ -230,7 +227,7 @@ def get_identifiers():
     header = request.headers
     JWT = header.get('Authorization')
 
-    info = get_user_by_JWT(JWT)
+    info = get_user_by_JWT(JWT, JWT_info)
     if info == None:
         return "forbidden", 403
 
@@ -253,7 +250,7 @@ def create_identifier():
     url = data.get('value')
     JWT = header.get('Authorization')
 
-    info = get_user_by_JWT(JWT)
+    info = get_user_by_JWT(JWT, JWT_info)
     if info == None:
         return "forbidden", 403
 
@@ -298,7 +295,7 @@ def delete_identifiers():
     header = request.headers
     JWT = header.get('Authorization')
 
-    info = get_user_by_JWT(JWT)
+    info = get_user_by_JWT(JWT, JWT_info)
     if info == None:
         return "forbidden", 403
 
@@ -369,10 +366,12 @@ def get_user():
     password = data.get('password')
     if users.get(username) == password:
         status_code = 200
-        JWT = generate_JWT(username)
+        JWT, issue_date = generate_JWT(username)
+        JWT_info[username] = {'token': JWT, 'issue_date': issue_date}
         msg = json.dumps({'token': JWT})
         response = make_response(msg, status_code)
         response.headers['Content-Type'] = 'application/json'
+        save_data(urls, users, JWT_info)
         return response
     else:
         status_code = 403
