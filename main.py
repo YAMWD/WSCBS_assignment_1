@@ -45,7 +45,6 @@ def load_data():
     return urls, users, JWT_info
 
 urls, users, JWT_info = load_data()
-
 app = Flask(__name__)
 
 def generate_JWT(user_name):
@@ -135,6 +134,7 @@ def check_jwt_vadility(start_time, end_time):
 def get_url(identifier):
     # data = request.json
 
+    urls, users, JWT_info = load_data()
     header = request.headers
     JWT = header.get('Authorization')
 
@@ -170,6 +170,7 @@ def get_url(identifier):
 # update the url of the identifier
 @app.route("/<identifier>", methods=["PUT"])
 def update_item(identifier):
+    urls, users, JWT_info = load_data()
     data = request.data
     data = json.loads(data.decode())
     url = data['url']
@@ -200,6 +201,7 @@ def update_item(identifier):
 # delete the identifier
 @app.route("/<identifier>", methods=["DELETE"])
 def delete_identifier(identifier):
+    urls, users, JWT_info = load_data()
     # data = request.json
     header = request.headers
     JWT = header.get('Authorization')
@@ -223,6 +225,7 @@ def delete_identifier(identifier):
 # get all the identifiers
 @app.route("/", methods=["GET"])
 def get_identifiers():
+    urls, users, JWT_info = load_data()
     # data = request.json
     header = request.headers
     JWT = header.get('Authorization')
@@ -244,6 +247,7 @@ def get_identifiers():
 # create a new identifier for the url
 @app.route("/", methods=["POST"])
 def create_identifier():
+    urls, users, JWT_info = load_data()
     data = request.json
     header = request.headers
     url = data.get('value')
@@ -289,6 +293,7 @@ def create_identifier():
 # delete all the identifiers
 @app.route("/", methods=["DELETE"])
 def delete_identifiers():
+    urls, users, JWT_info = load_data()
     # data = request.json
     header = request.headers
     JWT = header.get('Authorization')
@@ -312,6 +317,7 @@ def delete_identifiers():
 # Create a new user with username and password and store it in a table
 @app.route("/users", methods=["POST"])
 def create_user():
+    urls, users, JWT_info = load_data()
     data = request.json
     username = data.get('username')
     password = data.get('password')
@@ -331,6 +337,7 @@ def create_user():
 # Update the user’s password if the user presents the correct old password, or else return 403.
 @app.route("/users", methods=["PUT"])
 def update_user():
+    urls, users, JWT_info = load_data()
     data = request.json
     username = data.get('username')
     old_password = data.get('password')
@@ -356,6 +363,7 @@ def update_user():
 # Check if username and password exist in the table and generate a JWT or else return 403
 @app.route("/users/login", methods=["POST"])
 def get_user():
+    urls, users, JWT_info = load_data()
     data = request.json
     username = data.get('username')
     password = data.get('password')
